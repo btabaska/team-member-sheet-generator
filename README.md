@@ -26,6 +26,9 @@ To use this app follow the installation instruction above. Once you have the app
 
 ![Image of Deployed App](https://i.imgur.com/N5NWL6A.png "Image of Deployed App")
 
+Link to Video
+https://www.youtube.com/watch?v=aEr8xmD8uSg
+
 ## Contributing
 
 No contributions at this time.
