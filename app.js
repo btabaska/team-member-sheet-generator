@@ -10,9 +10,52 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+//Array to store employee class objects
 const employeeObjectArray = [];
 
-(async function createTeamMember() {
+//First check for output directory
+directoryCheck();
+
+//Then run the main logic
+inquirer
+  .prompt([
+    {
+      type: "input",
+      name: "numberOfTeamMembers",
+      message: "How many people are on your team?",
+    },
+  ])
+  .then((answers) => {
+    const staffCount = parseInt(answers.numberOfTeamMembers);
+    if (typeof staffCount === "number") {
+      asyncCall(staffCount);
+    }
+  })
+  .then(outputHTML(render(employeeObjectArray)));
+
+async function asyncCall() {
+  for (let i = 0; i < 3; i++) {
+    const employee = await createTeamMember();
+    employeeObjectArray.push(employee);
+  }
+}
+
+async function directoryCheck() {
+  fs.access(OUTPUT_DIR, function (error) {
+    if (error) {
+      fs.mkdirSync(OUTPUT_DIR);
+    } else {
+      return true;
+    }
+  });
+}
+async function outputHTML(data) {
+  fs.writeFile("./output/team.html", data, (err) => {
+    if (err) throw err;
+  });
+}
+
+async function createTeamMember() {
   const ans1 = await inquirer.prompt([
     {
       type: "input",
@@ -75,44 +118,15 @@ const employeeObjectArray = [];
         );
     }
   };
-  await inquirer.prompt([
-    {
-      type: "input",
-      name: "other",
-      message: `Do you want to add another employee? [Y/n]?`,
-    },
-  ]);
-  const test2 = await function (answer) {
-    console.log(answer);
-    switch (answer.toLowerCase()) {
-      case "y":
-        console.log("s");
-      case "n":
-        return;
-    }
-  };
 
   return { ...ans1, ...ans2, ...ans3, ...ans4, ...ans5 };
-})()
-  .then(console.log(employeeObjectArray))
-  .catch(console.error);
+}
 
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
+asyncCall();
 
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+async function asyncCall(staffCount) {
+  for (let i = 0; i < staffCount; i++) {
+    const employee = await createTeamMember();
+    employeeObjectArray.push(employee);
+  }
+}
