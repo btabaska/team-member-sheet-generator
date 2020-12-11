@@ -15,7 +15,6 @@ const employeeObjectArray = [];
 
 //First check for output directory
 directoryCheck();
-
 //Then run the main logic
 inquirer
   .prompt([
@@ -30,13 +29,45 @@ inquirer
     if (typeof staffCount === "number") {
       asyncCall(staffCount);
     }
-  })
-  .then(outputHTML(render(employeeObjectArray)));
+  });
 
-async function asyncCall() {
-  for (let i = 0; i < 3; i++) {
+async function asyncCall(staffCount) {
+  await loopOverEmployees(staffCount);
+  outputHTML(render(employeeObjectArray));
+}
+
+async function loopOverEmployees(staffCount) {
+  for (let i = 0; i < staffCount; i++) {
     const employee = await createTeamMember();
-    employeeObjectArray.push(employee);
+    console.log(employee);
+    switch (employee.role) {
+      case "Intern":
+        employeeObjectArray.push(
+          new Intern(employee.name, employee.id, employee.email, employee.other)
+        );
+        break;
+
+      case "Manager":
+        employeeObjectArray.push(
+          new Manager(
+            employee.name,
+            employee.id,
+            employee.email,
+            employee.other
+          )
+        );
+        break;
+      case "Engineer":
+        employeeObjectArray.push(
+          new Engineer(
+            employee.name,
+            employee.id,
+            employee.email,
+            employee.other
+          )
+        );
+        break;
+    }
   }
 }
 
@@ -102,31 +133,8 @@ async function createTeamMember() {
       message: `What is the team member's ` + test(ans4.role) + " ?",
     },
   ]);
-  await function (answer) {
-    switch (answer) {
-      case "Intern":
-        employeeObjectArray.push(
-          new Intern(ans1.name, ans2.id, ans3.email, ans5.other)
-        );
-      case "Manager":
-        employeeObjectArray.push(
-          new Manager(ans1.name, ans2.id, ans3.email, ans5.other)
-        );
-      case "Engineer":
-        employeeObjectArray.push(
-          new Engineer(ans1.name, ans2.id, ans3.email, ans5.other)
-        );
-    }
-  };
 
   return { ...ans1, ...ans2, ...ans3, ...ans4, ...ans5 };
 }
 
 asyncCall();
-
-async function asyncCall(staffCount) {
-  for (let i = 0; i < staffCount; i++) {
-    const employee = await createTeamMember();
-    employeeObjectArray.push(employee);
-  }
-}
